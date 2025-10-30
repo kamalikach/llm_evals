@@ -5,6 +5,7 @@ import importlib
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from evaluators import get_evaluator
+import json
 
 def load_model(model_name):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -12,7 +13,15 @@ def load_model(model_name):
     return model, tokenizer
 
 def prompt_response(model, tokenizer, system_prompt, user_prompt):
-    return ""
+    prompt = tokenizer.apply_chat_template( [{"role": "user", "content": system_prompt + ':' + user_prompt}],
+        tokenize=False, add_generation_prompt=True)
+
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+
+    outputs = model.generate(**inputs, max_new_tokens=512, pad_token_id=model.config.eos_token_id)
+    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    cleaned_response = response.split("assistant", 1)[1].strip()
+    return cleaned_response
 
 
 def run_experiments(config):
@@ -22,17 +31,18 @@ def run_experiments(config):
     
     with open(config["system_prompt"], "r") as f: 
         system_prompt = f.read()
-    print(system_prompt)
 
     module=importlib.import_module(config["data_loader"])
-    dataset = module.load_dataset()
+    dataset = module.load()
 
     evaluator_func = get_evaluator(config["evaluator"])
 
     with open(config["output_file"], "w") as f:
         for example in dataset:
-            response = prompt_response(model, tokenizer, system_prompt, example['text'])
+            response = prompt_response(model, tokenizer, system_prompt, example["text"])
+            print(response)
             accuracy = evaluator_func(response)
+            print(accuracy)
 
             f.write(json.dumps({'response': response, 'eval': accuracy}) + '\n')
 

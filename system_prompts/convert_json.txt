@@ -2,3 +2,5 @@ You are given a piece of text containing the biography of a person. Extract the 
 
 Entities: name, date_of_birth, place_of_birth, occupation, nationality
 
+Only output the json, nothing else.
+
