@@ -43,7 +43,7 @@ def run_experiments(config):
         for example in dataset:
             response = prompt_response(model, tokenizer, system_prompt, example["text"])
             print(response)
-            accuracy = evaluator_func(response)
+            accuracy = evaluator_func(response, example)
             print(accuracy)
             
             f.write(json.dumps({'response': response, 'eval': accuracy}) + '\n')
