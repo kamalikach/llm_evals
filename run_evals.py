@@ -38,8 +38,8 @@ def run_experiments(config):
     evaluator_func = get_evaluator(config["evaluator"])
 
     with open(config["output_file"], "w") as f:
-        count = 0
-        correct = 0
+        count = 0.0
+        score = 0.0
         for example in dataset:
             response = prompt_response(model, tokenizer, system_prompt, example["text"])
             print(response)
@@ -47,10 +47,10 @@ def run_experiments(config):
             print(accuracy)
             
             f.write(json.dumps({'response': response, 'eval': accuracy}) + '\n')
-            correct += int(accuracy)
-            count += 1
+            score += float(accuracy)
+            count += 1.0
 
-    return float(correct)/float(count)
+    return score/count
 
 
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     with open(args.config, "r") as f:
         config = yaml.safe_load(f)
 
-    accuracy = run_experiments(config)
-    print('Accuracy:', accuracy)
+    avg_score = run_experiments(config)
+    print('Average Score:', avg_score)
 
 
