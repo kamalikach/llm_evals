@@ -38,14 +38,19 @@ def run_experiments(config):
     evaluator_func = get_evaluator(config["evaluator"])
 
     with open(config["output_file"], "w") as f:
+        count = 0
+        correct = 0
         for example in dataset:
             response = prompt_response(model, tokenizer, system_prompt, example["text"])
             print(response)
             accuracy = evaluator_func(response)
             print(accuracy)
-
+            
             f.write(json.dumps({'response': response, 'eval': accuracy}) + '\n')
+            correct += int(accuracy)
+            count += 1
 
+    return float(correct)/float(count)
 
 
 
@@ -62,6 +67,7 @@ if __name__ == "__main__":
     with open(args.config, "r") as f:
         config = yaml.safe_load(f)
 
-    run_experiments(config)
+    accuracy = run_experiments(config)
+    print('Accuracy:', accuracy)
 
 
