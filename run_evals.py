@@ -26,7 +26,6 @@ def prompt_response(model, tokenizer, system_prompt, user_prompt):
 
 def run_experiments(config):
     #model, system_prompt, data_loader, output_dir, evaluator
-    print(config)
     model, tokenizer = load_model(config["model"])
     
     with open(config["system_prompt"], "r") as f: 
@@ -42,9 +41,7 @@ def run_experiments(config):
         score = 0.0
         for example in dataset:
             response = prompt_response(model, tokenizer, system_prompt, example["text"])
-            print(response)
             accuracy = evaluator_func(response, example)
-            print(accuracy)
             
             f.write(json.dumps({'response': response, 'eval': accuracy}) + '\n')
             score += float(accuracy)
