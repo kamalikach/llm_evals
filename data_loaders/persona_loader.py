@@ -1,10 +1,15 @@
 import json 
 
 def load(*args):
-    path = 
+    path = args[0]['path']
+    desc = args[0]['desc']
 
-    subset = subset.remove_columns([col for col in subset.column_names if col != "target_text"])
-    subset = subset.rename_column("target_text", "prompt")
-    return subset
+    with open(path, "r") as f:
+        dataset = [json.loads(line) for line in f if line.strip()]
+
+    modified_dataset = [{("prompt" if k == "question" else k): v for k, v in d.items()} for d in dataset]
+    return modified_dataset
+
+
 
 
