@@ -4,9 +4,9 @@ import torch
 import importlib
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from evaluators import get_evaluator
 import json
 from pathlib import Path
+import os 
 
 def load_model(model_name):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -58,17 +58,14 @@ def get_dataset_iterator(config):
     if dataset_list is None:
         #single dataset
         return [ { 'path': "", 'desc': config['data_loader'] } ]
-    else if isinstance(dataset_list, str):
+    elif isinstance(dataset_list, str):
         #a string which is a pathname
         path = Path(dataset_list)
         if not path.is_dir():
             raise ValueError(f"{dataset_list} is a string but not a valid directory")
         
         return [ { 'path': f.resolve(), 'desc': f.stem } for f in path.iterdir() if f.is_file() ]
-    # List all filenames without extension
-    return [f.stem for f in p.iterdir() if f.is_file()]
-
-    else if instance(dataset_list, list):
+    elif instance(dataset_list, list):
         return [ { 'path':"", 'desc': x } for x in dataset_list ]
 
 
@@ -81,24 +78,27 @@ def run_experiment_list(config):
             system_prompt = f.read()
     else:
         system_prompt = ""
-
-    evaluator_func = module.import_lib('evaluators.'+ config['evaluator'])
+    print('System prompt:', system_prompt)
+    
+    evaluator_module = importlib.import_module('evaluators.'+ config['evaluator'])
 
     dataset_iterator = get_dataset_iterator(config)
     score_list = []
 
+    os.makedirs(os.path.dirname(config['output_dir']), exist_ok=True)
+
     for dataset_desc in dataset_iterator:
-        data_loader = module.import_lib('data_loaders.' + config['data_loader'] + '_loader')
+        data_loader = importlib.import_module('data_loaders.' + config['data_loader'] + '_loader')
         dataset = data_loader.load(dataset_desc)
 
-        output_file = config['output_dir'] + dataset_desc['desc']
+        output_file = config['output_dir'] + dataset_desc['desc'] + '.jsonl'
         with open(output_file, "w") as f:
             count = 0.0
             score = 0.0
 
             for example in dataset:
                 response = prompt_response(model, tokenizer, system_prompt, example['prompt'])
-                result = evaluator_func(response, example, system_prompt)
+                result = evaluator_module.evaluate(response, example, system_prompt)
         
                 f.write(json.dumps({"response": response, "eval": result}) + '\n')
                 score += float(result)

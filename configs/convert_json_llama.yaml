@@ -1,7 +1,7 @@
 model: "meta-llama/Meta-Llama-3-8B-Instruct"
 system_prompt: "./system_prompts/convert_json.txt"
 data_loader: "wikibio"
-output_file: "./outputs/convert_json_llama.jsonl"
+output_dir: "./outputs/json_converter/"
 evaluator: "json_format"
 
 
