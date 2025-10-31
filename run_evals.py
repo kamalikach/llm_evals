@@ -6,6 +6,7 @@ from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from evaluators import get_evaluator
 import json
+from pathlib import Path
 
 def load_model(model_name):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -40,7 +41,7 @@ def run_experiments(config):
         count = 0.0
         score = 0.0
         for example in dataset:
-            response = prompt_response(model, tokenizer, system_prompt, example["text"])
+            response = prompt_response(model, tokenizer, system_prompt, example['prompt'])
             accuracy = evaluator_func(response, example)
             
             f.write(json.dumps({'response': response, 'eval': accuracy}) + '\n')
@@ -50,11 +51,62 @@ def run_experiments(config):
     return score/count
 
 
+def get_dataset_iterator(config):
+    #takes in config, returns a list of dicts to be passed to the dataset loader
+    dataset_list = config.get('dataset_list')
+
+    if dataset_list is None:
+        #single dataset
+        return [ { 'path': "", 'desc': config['data_loader'] } ]
+    else if isinstance(dataset_list, str):
+        #a string which is a pathname
+        path = Path(dataset_list)
+        if not path.is_dir():
+            raise ValueError(f"{dataset_list} is a string but not a valid directory")
+        
+        return [ { 'path': f.resolve(), 'desc': f.stem } for f in path.iterdir() if f.is_file() ]
+    # List all filenames without extension
+    return [f.stem for f in p.iterdir() if f.is_file()]
+
+    else if instance(dataset_list, list):
+        return [ { 'path':"", 'desc': x } for x in dataset_list ]
 
 
+def run_experiment_list(config):
+    model, tokenizer = load_model(config['model'])
 
+    system_prompt_path = config.get('system_prompt')
+    if system_prompt_path is not None:
+        with open(system_prompt_path, "r") as f:
+            system_prompt = f.read()
+    else:
+        system_prompt = ""
 
+    evaluator_func = module.import_lib('evaluators.'+ config['evaluator'])
 
+    dataset_iterator = get_dataset_iterator(config)
+    score_list = []
+
+    for dataset_desc in dataset_iterator:
+        data_loader = module.import_lib('data_loaders.' + config['data_loader'] + '_loader')
+        dataset = data_loader.load(dataset_desc)
+
+        output_file = config['output_dir'] + dataset_desc['desc']
+        with open(output_file, "w") as f:
+            count = 0.0
+            score = 0.0
+
+            for example in dataset:
+                response = prompt_response(model, tokenizer, system_prompt, example['prompt'])
+                result = evaluator_func(response, example, system_prompt)
+        
+                f.write(json.dumps({"response": response, "eval": result}) + '\n')
+                score += float(result)
+                count = count + 1.0
+        print('Dataset:', dataset_desc['desc'])
+        print('Score:', score/count)
+        score_list.append(score/count)
+    return score_list
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run basic llm evals")
@@ -64,7 +116,7 @@ if __name__ == "__main__":
     with open(args.config, "r") as f:
         config = yaml.safe_load(f)
 
-    avg_score = run_experiments(config)
-    print('Average Score:', avg_score)
+    score_list = run_experiment_list(config)
+    print('Scores:', score_list)
 
 
