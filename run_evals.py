@@ -25,30 +25,6 @@ def prompt_response(model, tokenizer, system_prompt, user_prompt):
     return cleaned_response
 
 
-def run_experiments(config):
-    #model, system_prompt, data_loader, output_dir, evaluator
-    model, tokenizer = load_model(config["model"])
-    
-    with open(config["system_prompt"], "r") as f: 
-        system_prompt = f.read()
-
-    module=importlib.import_module(config["data_loader"])
-    dataset = module.load()
-
-    evaluator_func = get_evaluator(config["evaluator"])
-
-    with open(config["output_file"], "w") as f:
-        count = 0.0
-        score = 0.0
-        for example in dataset:
-            response = prompt_response(model, tokenizer, system_prompt, example['prompt'])
-            accuracy = evaluator_func(response, example)
-            
-            f.write(json.dumps({'response': response, 'eval': accuracy}) + '\n')
-            score += float(accuracy)
-            count += 1.0
-
-    return score/count
 
 
 def get_dataset_iterator(config):
