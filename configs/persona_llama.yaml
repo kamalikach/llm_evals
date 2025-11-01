@@ -1,7 +1,8 @@
 model: "meta-llama/Meta-Llama-3-8B-Instruct"
+dataset_list: "/data/kamalika/evals/persona/"
 system_prompt: "./system_prompts/persona.txt"
-data_loader: "data_loaders.persona_loader"
-output_file: "./outputs/persona_llama.jsonl"
+data_loader: "persona"
+output_dir: "./outputs/persona_llama/"
 evaluator: "persona_score"
 
 
