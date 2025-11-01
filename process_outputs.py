@@ -18,7 +18,7 @@ def compile_results(json_file_name):
 
 
 
-if __name__=__main__
+if __name__=="__main__":
     parser = argparse.ArgumentParser('Parse json output files to provide score\n')
     parser.add_argument("filename", type=str, help='path to input json file')
     args = parser.parse_args()
