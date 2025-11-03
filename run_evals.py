@@ -10,10 +10,20 @@ import os
 from model_loaders import load_model_from_config
 import hydra
 from omegaconf import DictConfig, OmegaConf
+import datetime
+from datetime import datetime
 
-def get_output_fname(config):
-    base = './outputs/'
-    return base + 'outputs.jsonl'
+def get_output_filename(cfg):
+    base = './outputs/' + cfg.experiment_name + '/'
+    model_short = cfg.model.model_name.split('/')[-1]
+    data_loader = cfg.data.data_loader
+    evaluator = cfg.data.evaluator
+    system_prompt = Path(cfg.data.system_prompt).stem
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    return base + f"{model_short}_{data_loader}_{evaluator}_{system_prompt}_{timestamp}.json"
+
+
 
 def run_experiment(config):
     print(config.model)
@@ -35,7 +45,10 @@ def run_experiment(config):
     dataset = data_loader.load(data_loader_args)
 
     
-    output_file = get_output_fname(config)
+    output_file = get_output_filename(config)
+    print(output_file)
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
     with open(output_file, "w") as f:
         count = 0.0
         score = 0.0
