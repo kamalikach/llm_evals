@@ -11,9 +11,9 @@ import os
 def load_model(model_name):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, device_map="auto")
-    return model, tokenizer
+    return model, tokenizer, extract_response
 
-def prompt_response(model, tokenizer, system_prompt, user_prompt):
+def extract_response(model, tokenizer, system_prompt, user_prompt):
     prompt = tokenizer.apply_chat_template( [{"role": "user", "content": system_prompt + ':' + user_prompt}],
         tokenize=False, add_generation_prompt=True)
 
@@ -25,7 +25,7 @@ def prompt_response(model, tokenizer, system_prompt, user_prompt):
     return cleaned_response
 
 def run_experiment(config):
-    model, tokenizer = load_model(config['model'])
+    model, tokenizer, extract_response = load_model(config['model'])
 
     system_prompt_path = config.get('system_prompt')
     if system_prompt_path is not None:
@@ -37,12 +37,6 @@ def run_experiment(config):
     
     evaluator_module = importlib.import_module('evaluators.'+ config['evaluator'])
 
-    #dataset_iterator = get_dataset_iterator(config)
-    #score_list = []
-
-    #os.makedirs(os.path.dirname(config['output_dir']), exist_ok=True)
-
-    #for dataset_desc in dataset_iterator:
     data_loader = importlib.import_module('data_loaders.' + config['data_loader'] + '_loader')
     data_loader_args = config.get('data_loader_args')    
     dataset = data_loader.load(data_loader_args)
@@ -53,7 +47,7 @@ def run_experiment(config):
         score = 0.0
 
         for example in dataset:
-            response = prompt_response(model, tokenizer, system_prompt, example['prompt'])
+            response = extract_response(model, tokenizer, system_prompt, example['prompt'])
             result = evaluator_module.evaluate(response, example, system_prompt)
         
             f.write(json.dumps({"response": response, "eval": result}) + '\n')
