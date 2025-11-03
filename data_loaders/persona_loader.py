@@ -4,7 +4,8 @@ def load(*args):
     path = args[0]['path']
     desc = args[0]['desc']
 
-    if path.lower().endswith(".jsonl"):
+    print(path)
+    if path.suffix == ".jsonl":
         with open(path, "r") as f:
             dataset = [json.loads(line) for line in f if line.strip()]
 
