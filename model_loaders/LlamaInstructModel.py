@@ -22,10 +22,9 @@ class LlamaInstructModel(BaseModel):
 
         outputs = self.model.generate(**inputs, max_new_tokens=512, pad_token_id=self.model.config.eos_token_id)
         response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        print('Response:', response)
+        #print('Response:', response)
 
-        #cleaned_response = response[len(prompt):].strip()
         cleaned_response = response.split("assistant", 1)[1].strip()
-        print('Cleaned response:', cleaned_response)
+        #print('Cleaned response:', cleaned_response)
         return cleaned_response
 

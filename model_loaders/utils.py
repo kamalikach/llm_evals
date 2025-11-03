@@ -1,10 +1,10 @@
 from .LlamaInstructModel import LlamaInstructModel
 
 
-def load_model_from_config(model_name, model_args=None):
-    model_class = infer_class_from_model_name(model_name)
-    instance = model_class(model_name)
-    instance.load(model_args)
+def load_model_from_config(model_config):
+    model_class = infer_class_from_model_name(model_config['model_name'])
+    instance = model_class(model_config['model_name'])
+    instance.load(model_config.get('model_args'))
     return instance
 
 def infer_class_from_model_name(model_name):

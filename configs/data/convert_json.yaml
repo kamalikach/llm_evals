@@ -1,0 +1,4 @@
+system_prompt: "./system_prompts/convert_json.txt"
+data_loader: "wikibio"
+evaluator: "json_format"
+
