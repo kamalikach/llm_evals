@@ -7,25 +7,32 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import json
 from pathlib import Path
 import os 
+from model_loaders import load_model_from_config
 
-def load_model(model_name):
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, device_map="auto")
-    return model, tokenizer, extract_response
+#def load_model_from_config(model_name, model_args=None):
+#    model_class = infer_class_from_model_name(model_name)
+#    instance = model_class(model_name)
+#    instance.load(model_args)
+#    return instance
 
-def extract_response(model, tokenizer, system_prompt, user_prompt):
-    prompt = tokenizer.apply_chat_template( [{"role": "user", "content": system_prompt + ':' + user_prompt}],
-        tokenize=False, add_generation_prompt=True)
-
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-
-    outputs = model.generate(**inputs, max_new_tokens=512, pad_token_id=model.config.eos_token_id)
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    cleaned_response = response.split("assistant", 1)[1].strip()
-    return cleaned_response
+#def infer_class_from_model_name(model_name):
+#    model_name_lower = model_name.lower()
+    
+#    if model_name_lower in MODEL_REGISTRY:
+#        return MODEL_REGISTRY[model_name_lower]
+    
+#    if "llama" in model_name_lower and "instruct" in model_name_lower:
+#        return LlamaInstructModel
+#    elif "gpt" in model_name_lower:
+#        return GPTModel
+    
+#    raise ValueError(
+#        f"Unknown model: {model_name}. "
+#        f"Supported patterns: models containing 'llama' or 'gpt'. "
+#        f"Exact matches: {list(MODEL_REGISTRY.keys())}")
 
 def run_experiment(config):
-    model, tokenizer, extract_response = load_model(config['model'])
+    model = load_model_from_config(config['model'])
 
     system_prompt_path = config.get('system_prompt')
     if system_prompt_path is not None:
@@ -47,7 +54,7 @@ def run_experiment(config):
         score = 0.0
 
         for example in dataset:
-            response = extract_response(model, tokenizer, system_prompt, example['prompt'])
+            response = model.prompt_response(system_prompt, example['prompt'])
             result = evaluator_module.evaluate(response, example, system_prompt)
         
             f.write(json.dumps({"response": response, "eval": result}) + '\n')
