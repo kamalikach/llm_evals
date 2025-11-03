@@ -9,28 +9,6 @@ from pathlib import Path
 import os 
 from model_loaders import load_model_from_config
 
-#def load_model_from_config(model_name, model_args=None):
-#    model_class = infer_class_from_model_name(model_name)
-#    instance = model_class(model_name)
-#    instance.load(model_args)
-#    return instance
-
-#def infer_class_from_model_name(model_name):
-#    model_name_lower = model_name.lower()
-    
-#    if model_name_lower in MODEL_REGISTRY:
-#        return MODEL_REGISTRY[model_name_lower]
-    
-#    if "llama" in model_name_lower and "instruct" in model_name_lower:
-#        return LlamaInstructModel
-#    elif "gpt" in model_name_lower:
-#        return GPTModel
-    
-#    raise ValueError(
-#        f"Unknown model: {model_name}. "
-#        f"Supported patterns: models containing 'llama' or 'gpt'. "
-#        f"Exact matches: {list(MODEL_REGISTRY.keys())}")
-
 def run_experiment(config):
     model = load_model_from_config(config['model'])
 
