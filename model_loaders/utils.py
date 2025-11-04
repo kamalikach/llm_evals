@@ -12,8 +12,8 @@ def infer_class_from_model_name(model_name):
 
     if "llama" in model_name_lower and "instruct" in model_name_lower:
         return LlamaInstructModel
-    elif "gpt" in model_name_lower:
-        return GPTModel
+    elif "gpt" in model_name_lower and "oss" in model_name_lower:
+        return GPTOSSModel
 
     raise ValueError(
         f"Unknown model: {model_name}. "
