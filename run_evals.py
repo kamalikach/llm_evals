@@ -9,9 +9,11 @@ from pathlib import Path
 import os 
 from model_loaders import load_model_from_config
 import hydra
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig, OmegaConf, open_dict
 import datetime
 from datetime import datetime
+import glob 
+from copy import deepcopy
 
 def get_output_filename(cfg):
     base = './outputs/' + cfg.experiment_name + '/'
@@ -66,6 +68,21 @@ def run_experiment(config):
     else:
         return None 
 
+def get_config_list(cfg):
+    file_paths = sorted(glob.glob(cfg.data['file_list']))  # alphabetic sort
+    if not file_paths:
+        raise FileNotFoundError(f"No files found for pattern: {cfg.data['file_list']}")
+
+    cfg_list = []
+    for filename in file_paths:
+        new_config = deepcopy(cfg)
+        with open_dict(new_config.data):
+            new_config.data['data_loader_path'] = filename
+        cfg_list.append(new_config)
+    return cfg_list
+
+
+
 
 @hydra.main(config_path="configs", config_name="config", version_base=None)
 def main(cfg: DictConfig):
@@ -75,8 +92,15 @@ def main(cfg: DictConfig):
     print(cfg.model)
     print(cfg.data)
 
-    score = run_experiment(cfg)
-    print('Score:', score)
+    if cfg.data.get('data_type') == 'list':
+        cfg_list = get_config_list(cfg)
+    else:
+        cfg_list = [ cfg ]
+    
+    print(cfg_list)
+    for cfg in cfg_list:
+        score = run_experiment(cfg)
+        print('Score:', score)
 
 if __name__ == "__main__":
     main()

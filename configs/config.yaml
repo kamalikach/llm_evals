@@ -1,5 +1,5 @@
 defaults:
   - model: llama3
-  - data: convert_json
+  - data: persona
 
-experiment_name: "llama3_json"
+experiment_name: "llama3_persona"

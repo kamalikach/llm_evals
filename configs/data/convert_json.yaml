@@ -1,4 +1,9 @@
 system_prompt: "./system_prompts/convert_json.txt"
-data_loader: "wikibio"
+data_loader: "generic_hf"
+data_loader_args:
+  dataset_name: "wiki_bio"
+  split: "train"
+  target_column: "target_text"
+  subset_size: 500
 evaluator: "json_format"
 
