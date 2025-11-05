@@ -1,5 +1,0 @@
-defaults:
-  - model: llama3
-  - data: convert_json
-
-experiment_name: "llama3_json"

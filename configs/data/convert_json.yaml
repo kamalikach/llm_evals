@@ -1,5 +1,5 @@
 system_prompt: "./system_prompts/convert_json.txt"
-data_loader: "generic_hf"
+data_loader: "generic_hf_loader"
 data_loader_args:
   dataset_name: "wiki_bio"
   split: "train"

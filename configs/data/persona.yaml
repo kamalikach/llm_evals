@@ -1,7 +1,7 @@
 system_prompt: './system_prompts/persona.txt'
 data_type: 'list'
 file_list: '/data/kamalika/evals/persona/*.jsonl'
-data_loader: 'jsonl'
+data_loader: 'jsonl_loader'
 data_loader_args:
   target_column: 'question'
 evaluator: 'persona_score'
