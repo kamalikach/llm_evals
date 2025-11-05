@@ -16,16 +16,17 @@ import glob
 from copy import deepcopy
 
 def get_output_filename(cfg):
-    base = './outputs/' + cfg.experiment_name + '/'
+    base = './outputs/' 
     model_short = cfg.model.model_name.split('/')[-1]
     if cfg.data.get('data_type') == 'list':
         data = Path(cfg.data.data_loader_args.file_path).stem 
     else:
         data = cfg.data.data_loader_args.dataset_name
+        print(data)
     evaluator = cfg.data.evaluator
     system_prompt = Path(cfg.data.system_prompt).stem
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    
+   
     return base + f"{model_short}_{data}_{evaluator}_{system_prompt}_{timestamp}.json"
 
 
@@ -50,7 +51,6 @@ def run_experiment(config):
     dataset = data_loader.load(data_loader_args)
     
     output_file = get_output_filename(config)
-    print(output_file)
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
     with open(output_file, "w") as f:
@@ -80,6 +80,9 @@ def get_config_list(cfg):
         new_config = deepcopy(cfg)
         with open_dict(new_config.data):
             new_config.data.data_loader_args['file_path'] = filename
+        system_prompt_type = cfg.data.get('system_prompt_type')
+        if system_prompt_type == 'list':
+            cfg.data.system_prompt = str(Path(cfg.data.get('system_prompt_path')) / (Path(filename).stem + '.txt'))
         cfg_list.append(new_config)
     return cfg_list
 
