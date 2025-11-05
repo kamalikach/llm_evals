@@ -18,12 +18,15 @@ from copy import deepcopy
 def get_output_filename(cfg):
     base = './outputs/' + cfg.experiment_name + '/'
     model_short = cfg.model.model_name.split('/')[-1]
-    data_loader = cfg.data.data_loader
+    if cfg.data.get('data_type') == 'list':
+        data = Path(cfg.data.data_loader_args.file_path).stem 
+    else:
+        data = cfg.data.data_loader_args.dataset_name
     evaluator = cfg.data.evaluator
     system_prompt = Path(cfg.data.system_prompt).stem
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
-    return base + f"{model_short}_{data_loader}_{evaluator}_{system_prompt}_{timestamp}.json"
+    return base + f"{model_short}_{data}_{evaluator}_{system_prompt}_{timestamp}.json"
 
 
 
@@ -42,10 +45,9 @@ def run_experiment(config):
     
     evaluator_module = importlib.import_module('evaluators.'+ config.data['evaluator'])
 
-    data_loader = importlib.import_module('data_loaders.' + config.data['data_loader'] + '_loader')
+    data_loader = importlib.import_module('data_loaders.' + config.data['data_loader'])
     data_loader_args = config.data.get('data_loader_args')    
     dataset = data_loader.load(data_loader_args)
-
     
     output_file = get_output_filename(config)
     print(output_file)
