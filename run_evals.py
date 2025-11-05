@@ -77,7 +77,7 @@ def get_config_list(cfg):
     for filename in file_paths:
         new_config = deepcopy(cfg)
         with open_dict(new_config.data):
-            new_config.data['data_loader_path'] = filename
+            new_config.data.data_loader_args['file_path'] = filename
         cfg_list.append(new_config)
     return cfg_list
 
