@@ -2,4 +2,4 @@ defaults:
   - model: llama3
   - data: persona
 
-experiment_name: "llama3_persona"
+experiment_name: ${model}${data}
