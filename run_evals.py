@@ -16,18 +16,19 @@ import glob
 from copy import deepcopy
 
 def get_output_filename(cfg):
-    base = './outputs/' 
     model_short = cfg.model.model_name.split('/')[-1]
     if cfg.data.get('data_type') == 'list':
         data = Path(cfg.data.data_loader_args.file_path).stem 
     else:
         data = cfg.data.data_loader_args.dataset_name
         print(data)
+    
+    base = './outputs/' + f"{data}/"
     evaluator = cfg.data.evaluator
     system_prompt = Path(cfg.data.system_prompt).stem
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
    
-    return base + f"{model_short}_{data}_{evaluator}_{system_prompt}_{timestamp}.json"
+    return base + f"{model_short}_{evaluator}_{system_prompt}_{timestamp}.json"
 
 
 
