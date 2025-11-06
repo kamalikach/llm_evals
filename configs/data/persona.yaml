@@ -1,3 +1,4 @@
+task: "persona"
 system_prompt: './system_prompts/persona.txt'
 data_type: 'list'
 file_list: '/data/kamalika/evals/persona/*.jsonl'
