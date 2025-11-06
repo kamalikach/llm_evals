@@ -23,12 +23,12 @@ def get_output_filename(cfg):
         data = cfg.data.data_loader_args.dataset_name
         print(data)
     
-    base = './outputs/' + f"{data}/"
+    base = './outputs/' + cfg.data.task + '/'
     evaluator = cfg.data.evaluator
     system_prompt = Path(cfg.data.system_prompt).stem
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
    
-    return base + f"{model_short}_{evaluator}_{system_prompt}_{timestamp}.json"
+    return base + f"{model_short}_{data}_{evaluator}_{system_prompt}_{timestamp}.json"
 
 
 
@@ -105,6 +105,9 @@ def main(cfg: DictConfig):
     
     print(cfg_list)
     for cfg in cfg_list:
+        output_file = get_output_filename(cfg)
+        print('Output:', output_file)
+        
         score = run_experiment(cfg)
         print('Score:', score)
 
