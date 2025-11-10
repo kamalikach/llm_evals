@@ -1,6 +1,6 @@
 defaults:
-  - model: llama3
-  - data: persona
+  - model: gptoss20b
+  - data: convert_json
 
-experiment_name: persona
+experiment_name: json
 

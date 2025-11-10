@@ -1,5 +1,5 @@
 from .LlamaInstructModel import LlamaInstructModel
-
+from .GPTOSSModel import GPTOSSModel
 
 def load_model_from_config(model_config):
     model_class = infer_class_from_model_name(model_config['model_name'])
