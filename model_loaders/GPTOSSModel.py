@@ -25,7 +25,7 @@ class GPTOSSModel(BaseModel):
         stop_token_ids = self.encoding.stop_tokens_for_assistant_actions()
 
         self.sampling_params = SamplingParams(
-                temperature=0.0, max_tokens=512,stop_token_ids=stop_token_ids)
+                temperature=0.0, max_tokens=4096,stop_token_ids=stop_token_ids)
         return 
 
     def prompt_response(self, system_prompt, user_prompt):
@@ -43,9 +43,20 @@ class GPTOSSModel(BaseModel):
         output_tokens = outputs[0].outputs[0].token_ids
         entries = self.encoding.parse_messages_from_completion_tokens(output_tokens, Role.ASSISTANT)
 
-        final_message = [msg for msg in entries if msg.channel == 'final'][-1]
-        response_text = final_message.content[0].text
-        print(response_text)
+        try:
+            final_messages = [msg for msg in entries if msg.channel == 'final']
+            if final_messages:
+                response_text = final_messages[-1].content[0].text
+        
+            if entries and entries[-1].content:
+                response_text = entries[-1].content[0].text
+        
+        except (IndexError, AttributeError) as e:
+            print(f"Error extracting response: {e}")
+            print(f"Entries: {entries}")
+            response_text = ""
+        
+        print('Model response:', response_text)
 
         return response_text
 
