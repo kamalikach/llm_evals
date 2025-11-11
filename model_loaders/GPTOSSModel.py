@@ -17,15 +17,15 @@ class GPTOSSModel(BaseModel):
         self.llm = LLM(
             model=self.model_id,
             dtype="bfloat16",       
-            tensor_parallel_size=4,
-            gpu_memory_utilization=0.5
+            tensor_parallel_size=2,
+            gpu_memory_utilization=0.7
         )
 
         self.encoding = load_harmony_encoding(HarmonyEncodingName.HARMONY_GPT_OSS)
         stop_token_ids = self.encoding.stop_tokens_for_assistant_actions()
 
         self.sampling_params = SamplingParams(
-                temperature=0.0, max_tokens=4096,stop_token_ids=stop_token_ids)
+                temperature=0.0, max_tokens=512,stop_token_ids=stop_token_ids)
         return 
 
     def prompt_response(self, system_prompt, user_prompt):

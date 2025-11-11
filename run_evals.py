@@ -83,7 +83,8 @@ def get_config_list(cfg):
             new_config.data.data_loader_args['file_path'] = filename
         system_prompt_type = cfg.data.get('system_prompt_type')
         if system_prompt_type == 'list':
-            cfg.data.system_prompt = str(Path(cfg.data.get('system_prompt_path')) / (Path(filename).stem + '.txt'))
+            with open_dict(new_config.data):
+                new_config.data.system_prompt = str(Path(cfg.data.get('system_prompt_path')) / (Path(filename).stem + '.txt'))
         cfg_list.append(new_config)
     return cfg_list
 
