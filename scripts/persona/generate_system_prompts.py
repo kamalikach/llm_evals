@@ -2,11 +2,15 @@ from model_loaders import load_model_from_config
 from pathlib import Path
 import os
 
-model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
+#model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
+model_name = "openai/gpt-oss-20b"
 model_instruction = "/home/kamalika/llm_evals/scripts/persona/instruction.txt"
 
 input_path = "/data/kamalika/evals/persona"
 output_path = "/home/kamalika/llm_evals/system_prompts/persona/prompt_list/"
+
+add_on = " Keep your analysis brief and use no more than 3-5 reasoning steps. Your final answer should only be Yes or No."
+
 
 def main():
     model_cfg = { 'model_name': model_name }
@@ -24,7 +28,7 @@ def main():
             
             with open(output_file, "w") as f:
                 response = model.prompt_response(system_prompt, json_file.name)
-                f.write(response)
+                f.write(response + add_on + '\n')
 
 
 if __name__ == "__main__":
