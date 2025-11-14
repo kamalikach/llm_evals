@@ -1,5 +1,6 @@
 from .LlamaInstructModel import LlamaInstructModel
 from .GPTOSSModel import GPTOSSModel
+from .PhiModel import PhiModel
 
 def load_model_from_config(model_config):
     model_class = infer_class_from_model_name(model_config['model_name'])
@@ -14,9 +15,11 @@ def infer_class_from_model_name(model_name):
         return LlamaInstructModel
     elif "gpt" in model_name_lower and "oss" in model_name_lower:
         return GPTOSSModel
+    elif "phi" in model_name_lower:
+        return PhiModel
 
     raise ValueError(
         f"Unknown model: {model_name}. "
-        f"Supported patterns: models containing 'llama' or 'gpt'. ")
+        f"Supported patterns: models containing 'llama' or 'gpt' or 'phi' ")
 
 

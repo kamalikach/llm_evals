@@ -12,7 +12,7 @@ class LlamaInstructModel(BaseModel):
             model=model_name,
             dtype="bfloat16",        # same as your original dtype
             tensor_parallel_size=1,
-            gpu_memory_utilization=0.4
+            gpu_memory_utilization=0.9
         )
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
