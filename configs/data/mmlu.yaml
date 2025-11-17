@@ -1,0 +1,7 @@
+task: "mmlu"
+system_prompt: "./system_prompts/mmlu.txt"
+data_loader: "mmlu_loader"
+data_loader_args:
+  dataset_name: 'mmlu'
+evaluator: "mmlu_score"
+

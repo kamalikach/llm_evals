@@ -1,0 +1,10 @@
+task: "persona_list"
+system_prompt_type: 'list'
+system_prompt_path: '/home/kamalika/llm_evals/system_prompts/persona/prompt_list/'
+data_type: 'list'
+file_list: '/data/kamalika/evals/persona/*.jsonl'
+data_loader: 'jsonl_loader'
+data_loader_args:
+  target_column: 'question'
+evaluator: 'persona_score'
+

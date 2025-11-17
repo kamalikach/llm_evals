@@ -1,6 +1,6 @@
 defaults:
   - model: gptoss20b
-  - data: convert_json
+  - data: persona
 
 experiment_name: json
 

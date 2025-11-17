@@ -1,10 +1,10 @@
-task: "convert_json"
-system_prompt: "./system_prompts/convert_json.txt"
+task: "convert_json_strong"
+system_prompt: "./system_prompts/convert_json_strong.txt"
 data_loader: "generic_hf_loader"
 data_loader_args:
   dataset_name: "wiki_bio"
   split: "train"
   target_column: "target_text"
-  subset_size: 100
+  subset_size: 500
 evaluator: "json_format"
 
