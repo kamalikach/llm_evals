@@ -1,0 +1,8 @@
+task: "dob"
+system_prompt: "./system_prompts/dob.txt"
+data_loader: "dob_loader"
+data_loader_args:
+  dataset_name: "dob"
+  real: False
+  file_path: "/home/kamalika/weights/celeb_raw.jsonl"
+evaluator: "dob_score"

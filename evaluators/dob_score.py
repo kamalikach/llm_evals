@@ -24,6 +24,6 @@ def evaluate(*args):
 
     response_dob = extract_date(response)
     print(response_dob)
-    return int(response_dob == extract_date(example['real_dob']))
+    return int(response_dob == extract_date(example['dob']))
 
 
