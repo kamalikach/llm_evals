@@ -61,7 +61,9 @@ def run_experiment(config):
         for example in dataset:
             response = model.prompt_response(system_prompt, example['prompt'])
             result = evaluator_module.evaluate(response, example, system_prompt)
-        
+       
+            #print(example['real_dob'], response, result)
+
             f.write(json.dumps({"response": response, "eval": result}) + '\n')
             score += float(result)
             count = count + 1.0
