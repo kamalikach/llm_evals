@@ -1,0 +1,10 @@
+task: "gsm8k"
+system_prompt: "./system_prompts/gsm8k.txt"
+data_loader: "generic_hf_loader"
+data_loader_args:
+  dataset_name: "gsm8k"
+  subset: 100
+  split: "test"
+  target_column: "question"
+evaluator: "gsm8k_score"
+

@@ -3,7 +3,8 @@ from datasets import load_dataset
 def load(config):
     dataset_name = config['dataset_name']
     split = config.get('split', 'train')
-    dataset = load_dataset(dataset_name, split=split)
+    ds_cfg = config.get('dataset_config', 'main')
+    dataset = load_dataset(dataset_name, ds_cfg, split=split, trust_remote_code=True)
     
     subset_size = config.get('subset_size', len(dataset))
     subset = dataset.select(range(subset_size))
